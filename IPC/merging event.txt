@@ -1,0 +1,52 @@
+//--------------------------------------------------------------------------------------------
+//  Merging events
+//--------------------------------------------------------------------------------------------
+module tb;
+  event a,b;
+  initial 
+    begin
+      fork
+        begin
+        wait(a.triggered);
+        $display("@%0d:T1:Wait for event1 is over",$time);
+        end
+       begin
+        wait(b.triggered);
+        $display("@%0d:T2:Wait for event2 is over",$time);
+      end
+  #20 -> a;
+  #30 -> b;
+        begin
+  #10 b = a;
+        end
+      join
+   end
+  
+endmodule
+  
+     
+
+//--------------------------------------------------------------------------------------------
+//Related event 
+//--------------------------------------------------------------------------------------------
+
+
+module tb;
+  event a, b, c;
+  initial 
+    begin
+    a = b;
+    -> c;
+    -> a;        // also triggers b
+    $display("trigered b with a",a);
+    -> b;        // also triggers a
+    $display("trigered a with b");
+  
+    a = c;
+    b = a;
+    -> a; // also triggers b and c
+    -> b; // also triggers a and c
+    -> c; // also triggers a and b
+    end
+
+endmodule
